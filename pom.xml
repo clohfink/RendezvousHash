@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.csforge</groupId>
-	<artifactId>hrw</artifactId>
+	<artifactId>RendezvousHash</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>HRW hash</name>
 	<description>Rendezvous or Highest Random Weight (HRW) hashing is an algorithm that allows clients to achieve distributed agreement on which site (or proxy) a given object is to be placed in. It accomplishes the same goal as consistent hashing, using an entirely different method.</description>
