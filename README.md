@@ -11,9 +11,12 @@ An alternative to the ring based, consistent hashing.  This is a high performanc
 
 Source: https://en.wikipedia.org/wiki/Rendezvous_hashing
 
-A comparison of how Consistent hashing and Rendezvous hashing leads to differences, consider the following load distribution after removing a couple nodes in a 5 node ring:
+In comparison of  Consistent hashing and Rendezvous hashing, consider the following load distribution after removing a couple nodes in a 5 node ring:
+
 ![](https://raw.github.com/clohfink/RendezvousHash/master/images/chd.png)
-Only node4 takes the load of the 2 others next in the ring.  However using HRW the distribution remains even
+
+Only node4 takes the load of the 2 that were removed.  However using HRW the distribution remains even
+
 ![](https://raw.github.com/clohfink/RendezvousHash/master/images/hrwd.png)
 
 This example uses a [rather simple ring](https://github.com/clohfink/RendezvousHash/blob/master/src/main/java/com/csforge/ConsistentHash.java) for consistent hash implementation however and this extreme unbalance can be mitigated by adding the nodes many times (ie ~200) throughout the ring.  These virtual nodes (or vnodes) are used in databases like Riak and Cassandra.  Many libraries however do not implement vnodes.
