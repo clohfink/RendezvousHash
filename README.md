@@ -1,7 +1,7 @@
 RendezvousHash
 ==============
 
-An alternative to the ring based, consistent hashing.  This is a high performance thread safe implementation of Rendezvous (Highest Random Weight, HRW) hashing.  An algorithm that allows clients to achieve distributed agreement on which node (or proxy) a given key is to be placed in. This implementation has the following properties.
+An alternative to the ring based, consistent hashing.  This is a fast thread safe implementation of Rendezvous (Highest Random Weight, HRW) hashing.  An algorithm that allows clients to achieve distributed agreement on which node (or proxy) a given key is to be placed in. This implementation has the following properties.
 
 * Non-blocking reads : Determining which node a key belongs to is always non-blocking.  Adding and removing nodes however blocks each other.
 * Low overhead: providing using a hash function of low overhead.  Throughput can be computed as (hashes computable per sec)/node count
