@@ -11,7 +11,7 @@ An alternative to the ring based, consistent hashing.  This is a high performanc
 
 Source: https://en.wikipedia.org/wiki/Rendezvous_hashing
 
-In comparison of  Consistent hashing and Rendezvous hashing, consider the following load distribution after removing a couple nodes in a 5 node ring:
+In comparison ([source code](https://github.com/clohfink/RendezvousHash/blob/master/src/main/java/com/csforge/Compare.java)) of Consistent hashing and Rendezvous hashing, consider the following load distribution after removing a couple nodes in a 5 node ring:
 
 ![](https://raw.github.com/clohfink/RendezvousHash/master/images/chd.png)
 
