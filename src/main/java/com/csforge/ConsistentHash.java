@@ -9,7 +9,7 @@ import com.google.common.hash.HashFunction;
 
 /**
  * Very simple implementation of consistent hash to compare against HRW hashing.  This does not include the vnode improvement which
- * would mitigate issues with uneven distribution but matches closely with what many implementations actually use.  As such this
+ * would mitigate issues with uneven distribution but matches closely with what many implementations actually use.  This
  * implementation is not recommended for use outside testing.
  */
 public class ConsistentHash<K, N> {
