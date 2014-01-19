@@ -28,16 +28,16 @@ public class ConsistentHash<K, N> {
 		}
 	}
 
-	public synchronized boolean add(N node) { 
+	public boolean add(N node) { 
 		ring.put(hashFunction.newHasher().putObject(node, nodeFunnel).hash().asLong(), node); 
 		return true;
 	}
 
-	public synchronized boolean remove(N node) {
+	public boolean remove(N node) {
 		return node == ring.remove(hashFunction.newHasher().putObject(node, nodeFunnel).hash().asLong()); 
 	}
 
-	public synchronized N get(K key) { 
+	public N get(K key) { 
 		Long hash = hashFunction.newHasher().putObject(key, keyFunnel).hash().asLong();
 		if (!ring.containsKey(hash)) {
 			SortedMap<Long, N> tailMap = ring.tailMap(hash);
