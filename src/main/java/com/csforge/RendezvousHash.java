@@ -8,25 +8,24 @@ import com.google.common.hash.Funnel;
 import com.google.common.hash.HashFunction;
 
 /**
- * <p>Rendezvous or Highest Random Weight (HRW) hashing is an algorithm that allows clients to achieve distributed agreement on which site (or proxy) a given
- * object is to be placed in. It accomplishes the same goal as consistent hashing, using an entirely different method.</p>
- * 
- * <p>
- * Rendezvous hashing has the following properties.
+ * <p>A high performance thread safe implementation of Rendezvous (Highest Random Weight, HRW) hashing is an algorithm that allows clients to achieve distributed agreement on which node (or proxy) a given
+ * key is to be placed in. This implementation has the following properties.
  * <ul>
+ * <li>Non-blocking reads : Determining which node a key belongs to is always non-blocking.  Adding and removing nodes however blocks each other</li>
  * <li>Low overhead: providing using a hash function of low overhead</li>
- * <li>Load balancing: Since the hash function is randomizing, each of the n sites is equally likely to receive the object O. Loads are uniform across the sites.</li>
- * <li>High hit rate: Since all clients agree on placing an object O into the same site SO , each fetch or placement of O into SO yields the maximum utility in terms of hit rate. The object O will always be found unless it is evicted by some replacement algorithm at SO .</li>
- * <li>Minimal disruption: When a site fails, only the objects mapped to that site need to be remapped. Disruption is at the minimal possible level</li>
- * </ul></p>
- * source: https://en.wikipedia.org/wiki/Rendezvous_hashing
+ * <li>Load balancing: Since the hash function is randomizing, each of the n nodes is equally likely to receive the key K. Loads are uniform across the sites.</li>
+ * <li>High hit rate: Since all clients agree on placing an key K into the same node N , each fetch or placement of K into N yields the maximum utility in terms of hit rate. The key K will always be found unless it is evicted by some replacement algorithm at N.</li>
+ * <li>Minimal disruption: When a node is removed, only the keys mapped to that node need to be remapped and they will be distributed evenly</li>
+ * </ul>
+ * </p>
+ * source: https://en.wikipedia.org/wiki/Rendezvous_hashing 
  * 
  * @author Chris Lohfink
  * 
  * @param <K>
  *            type of key
  * @param <N>
- *            type of whatever want to be returned (ie IP address or String)
+ *            type node/site or whatever want to be returned (ie IP address or String)
  */
 public class RendezvousHash<K, N> {
 
@@ -89,7 +88,10 @@ public class RendezvousHash<K, N> {
 		long maxValue = Long.MIN_VALUE;
 		N max = null;
 		for (N node : nodes) {
-			long nodesHash = hasher.newHasher().putObject(key, keyFunnel).putObject(node, nodeFunnel).hash().asLong();
+			long nodesHash = hasher.newHasher()
+					.putObject(key, keyFunnel)
+					.putObject(node, nodeFunnel)
+					.hash().asLong();
 			if (nodesHash > maxValue) {
 				max = node;
 				maxValue = nodesHash;
