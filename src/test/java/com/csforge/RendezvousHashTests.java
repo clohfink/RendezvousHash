@@ -70,6 +70,22 @@ public class RendezvousHashTests {
 		h.add(node);
 		Assert.assertEquals(node, h.get("key"));
 	}
+	
+	/**
+	 * Ensure 2 hashes if have nodes added in different order will have same results
+	 */
+	@Test
+	public void testDifferentOrder() {
+		RendezvousHash<String, String> h = genEmpty();
+		RendezvousHash<String, String> h2 = genEmpty();
+		for(int i = 0 ; i < 1000; i++) {
+			h.add("node"+i);
+		}
+		for(int i = 1000 ; i > 0; i--) {
+			h2.add("node"+i);
+		}
+		Assert.assertEquals(h2.get("key"), h.get("key"));
+	}
 
 	private static RendezvousHash<String, String> genEmpty() {
 		return new RendezvousHash<String, String>(hfunc, strFunnel, strFunnel, new ArrayList<String>());

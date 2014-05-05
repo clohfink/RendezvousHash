@@ -1,5 +1,6 @@
 package com.csforge;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
@@ -50,6 +51,7 @@ public class RendezvousHash<K, N> {
 	 * All the current nodes in the pool
 	 */
 	private Set<N> nodes;
+	private N[] ordered;
 
 	/**
 	 * Creates a new RendezvousHash with a starting set of nodes provided by init. The funnels will be used when generating the hash that combines the nodes and
@@ -59,7 +61,7 @@ public class RendezvousHash<K, N> {
 		this.hasher = hasher;
 		this.keyFunnel = keyFunnel;
 		this.nodeFunnel = nodeFunnel;
-		this.nodes = Sets.newCopyOnWriteArraySet();
+		this.nodes = Sets.newHashSet();
 		nodes.addAll(init);
 	}
 
@@ -68,8 +70,12 @@ public class RendezvousHash<K, N> {
 	 * 
 	 * @return true if the node was in the pool
 	 */
-	public boolean remove(N node) {
-		return nodes.remove(node);
+	public synchronized boolean remove(N node) {
+		boolean ret = nodes.remove(node);
+		N[] tmp = (N[]) nodes.toArray();
+		Arrays.sort(tmp);
+		ordered = tmp;
+		return ret;
 	}
 
 	/**
@@ -77,8 +83,12 @@ public class RendezvousHash<K, N> {
 	 * 
 	 * @return true if node did not previously exist in pool
 	 */
-	public boolean add(N node) {
-		return nodes.add(node);
+	public synchronized boolean add(N node) {
+		boolean ret = nodes.add(node);
+		N[] tmp = (N[]) nodes.toArray();
+		Arrays.sort(tmp);
+		ordered = tmp;
+		return ret;
 	}
 
 	/**
@@ -87,7 +97,7 @@ public class RendezvousHash<K, N> {
 	public N get(K key) {
 		long maxValue = Long.MIN_VALUE;
 		N max = null;
-		for (N node : nodes) {
+		for (N node : ordered) {
 			long nodesHash = hasher.newHasher()
 					.putObject(key, keyFunnel)
 					.putObject(node, nodeFunnel)
