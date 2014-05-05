@@ -62,6 +62,7 @@ public class RendezvousHash<K, N> {
 		this.keyFunnel = keyFunnel;
 		this.nodeFunnel = nodeFunnel;
 		this.nodes = Sets.newHashSet();
+		this.ordered = (N[]) new Object[0];
 		nodes.addAll(init);
 	}
 

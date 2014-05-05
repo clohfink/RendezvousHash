@@ -22,6 +22,12 @@ public class RendezvousHashTests {
 			into.putBytes(from.getBytes());
 		}};
 	
+	@Test
+	public void testEmpty() {
+		RendezvousHash<String, String> h = genEmpty();
+		Assert.assertEquals(null, h.get("key")); 
+	}
+		
 	/**
 	 * Ensure the same node returned for same key after a large change to the pool of nodes
 	 */
