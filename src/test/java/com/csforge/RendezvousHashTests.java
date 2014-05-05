@@ -1,13 +1,13 @@
 package com.csforge;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.Sets;
+import com.google.common.hash.AlwaysOneHashFunction;
 import com.google.common.hash.Funnel;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -81,12 +81,28 @@ public class RendezvousHashTests {
 		for(int i = 0 ; i < 1000; i++) {
 			h.add("node"+i);
 		}
-		for(int i = 1000 ; i > 0; i--) {
+		for(int i = 1000 ; i >= 0; i--) {
 			h2.add("node"+i);
 		}
 		Assert.assertEquals(h2.get("key"), h.get("key"));
 	}
 
+	@Test
+	public void testCollsion() {
+		HashFunction hfunc = new AlwaysOneHashFunction();
+		RendezvousHash h1 = new RendezvousHash<String, String>(hfunc, strFunnel, strFunnel, new ArrayList<String>());
+		RendezvousHash h2 = new RendezvousHash<String, String>(hfunc, strFunnel, strFunnel, new ArrayList<String>());
+
+		for(int i = 0 ; i < 1000; i++) {
+			h1.add("node"+i);
+		}
+		for(int i = 1000 ; i >= 0; i--) {
+			h2.add("node"+i);
+		}
+		Assert.assertEquals(h2.get("key"), h1.get("key"));
+	}
+	 
+	
 	private static RendezvousHash<String, String> genEmpty() {
 		return new RendezvousHash<String, String>(hfunc, strFunnel, strFunnel, new ArrayList<String>());
 	}
