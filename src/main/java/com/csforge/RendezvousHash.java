@@ -1,10 +1,8 @@
 package com.csforge;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
-import com.google.common.collect.Sets;
 import com.google.common.hash.Funnel;
 import com.google.common.hash.HashFunction;
 
@@ -28,44 +26,43 @@ import com.google.common.hash.HashFunction;
  * @param <N>
  *            type node/site or whatever want to be returned (ie IP address or String)
  */
-public class RendezvousHash<K, N> {
+public class RendezvousHash<K, N extends Comparable<? super N>> {
 
 	/**
 	 * A hashing function from guava, ie Hashing.murmur3_128()
 	 */
-	private HashFunction hasher;
+	private final HashFunction hasher;
 
 	/**
 	 * A funnel to describe how to take the key and add it to a hash.
 	 * 
 	 * @see com.google.common.hash.Funnel
 	 */
-	private Funnel<K> keyFunnel;
+	private final Funnel<K> keyFunnel;
 
 	/**
 	 * Funnel describing how to take the type of the node and add it to a hash
 	 */
-	private Funnel<N> nodeFunnel;
+	private final Funnel<N> nodeFunnel;
 
 	/**
 	 * All the current nodes in the pool
 	 */
-	private Set<N> nodes;
-	private volatile N[] ordered;
+	private final ConcurrentSkipListSet<N> ordered;
 
 	/**
 	 * Creates a new RendezvousHash with a starting set of nodes provided by init. The funnels will be used when generating the hash that combines the nodes and
 	 * keys. The hasher specifies the hashing algorithm to use.
 	 */
 	public RendezvousHash(HashFunction hasher, Funnel<K> keyFunnel, Funnel<N> nodeFunnel, Collection<N> init) {
+		if (hasher == null) throw new NullPointerException("hasher");
+		if (keyFunnel == null) throw new NullPointerException("keyFunnel");
+		if (nodeFunnel == null) throw new NullPointerException("nodeFunnel");
+		if (init == null) throw new NullPointerException("init");
 		this.hasher = hasher;
 		this.keyFunnel = keyFunnel;
 		this.nodeFunnel = nodeFunnel;
-		this.nodes = Sets.newHashSet();
-		this.ordered = (N[]) new Object[0];
-		for (N node: (N[]) init.toArray()) {
-			add(node);
-		}
+		this.ordered = new ConcurrentSkipListSet<N>(init);
 	}
 
 	/**
@@ -73,12 +70,8 @@ public class RendezvousHash<K, N> {
 	 * 
 	 * @return true if the node was in the pool
 	 */
-	public synchronized boolean remove(N node) {
-		boolean ret = nodes.remove(node);
-		N[] tmp = (N[]) nodes.toArray();
-		Arrays.sort(tmp);
-		ordered = tmp;
-		return ret;
+	public boolean remove(N node) {
+		return ordered.remove(node);
 	}
 
 	/**
@@ -86,12 +79,8 @@ public class RendezvousHash<K, N> {
 	 * 
 	 * @return true if node did not previously exist in pool
 	 */
-	public synchronized boolean add(N node) {
-		boolean ret = nodes.add(node);
-		N[] tmp = (N[]) nodes.toArray();
-		Arrays.sort(tmp);
-		ordered = tmp;
-		return ret;
+	public boolean add(N node) {
+		return ordered.add(node);
 	}
 
 	/**
