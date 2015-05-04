@@ -51,7 +51,7 @@ public class RendezvousHash<K, N> {
 	 * All the current nodes in the pool
 	 */
 	private Set<N> nodes;
-	private N[] ordered;
+	private volatile N[] ordered;
 
 	/**
 	 * Creates a new RendezvousHash with a starting set of nodes provided by init. The funnels will be used when generating the hash that combines the nodes and
@@ -63,7 +63,9 @@ public class RendezvousHash<K, N> {
 		this.nodeFunnel = nodeFunnel;
 		this.nodes = Sets.newHashSet();
 		this.ordered = (N[]) new Object[0];
-		nodes.addAll(init);
+		for (N node: (N[]) init.toArray()) {
+			add(node);
+		}
 	}
 
 	/**

@@ -1,17 +1,15 @@
 package com.csforge;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.Sets;
-import com.google.common.hash.AlwaysOneHashFunction;
-import com.google.common.hash.Funnel;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
-import com.google.common.hash.PrimitiveSink;
+import com.google.common.hash.*;
 
 @SuppressWarnings("serial")
 public class RendezvousHashTests {
@@ -107,7 +105,29 @@ public class RendezvousHashTests {
 		}
 		Assert.assertEquals(h2.get("key"), h1.get("key"));
 	}
-	 
+
+	/**
+	 * Ensure modified collection in constructor safe
+	 */
+	@Test
+	public void testConstructorThreadSaftey() {
+		final List<String> init = new ArrayList<String>();
+		final AtomicBoolean running = new AtomicBoolean(true);
+		Thread updating = new Thread(new Runnable() {
+			public void run()
+			{
+				while(running.get()) {
+					init.add("test");
+					init.remove("test");
+				}
+			}
+		});
+		updating.start();
+		for (int i = 0; i < 1000; i++) {
+			new RendezvousHash<String, String>(hfunc, strFunnel, strFunnel, init);
+		}
+		running.set(false);
+	}
 	
 	private static RendezvousHash<String, String> genEmpty() {
 		return new RendezvousHash<String, String>(hfunc, strFunnel, strFunnel, new ArrayList<String>());
