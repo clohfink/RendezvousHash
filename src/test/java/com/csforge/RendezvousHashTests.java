@@ -105,29 +105,6 @@ public class RendezvousHashTests {
 		}
 		Assert.assertEquals(h2.get("key"), h1.get("key"));
 	}
-
-	/**
-	 * Ensure modified collection in constructor safe
-	 */
-	@Test
-	public void testConstructorThreadSaftey() {
-		final List<String> init = new ArrayList<String>();
-		final AtomicBoolean running = new AtomicBoolean(true);
-		Thread updating = new Thread(new Runnable() {
-			public void run()
-			{
-				while(running.get()) {
-					init.add("test");
-					init.remove("test");
-				}
-			}
-		});
-		updating.start();
-		for (int i = 0; i < 1000; i++) {
-			new RendezvousHash<String, String>(hfunc, strFunnel, strFunnel, init);
-		}
-		running.set(false);
-	}
 	
 	private static RendezvousHash<String, String> genEmpty() {
 		return new RendezvousHash<String, String>(hfunc, strFunnel, strFunnel, new ArrayList<String>());
